@@ -1,5 +1,5 @@
-library(gitBasedProjects)
-sourceAllLibs('../rasterextrafuns/rasterPlotFunctions/R/')
+#library(gitBasedProjects)
+#sourceAllLibs('../rasterextrafuns/rasterPlotFunctions/R/')
 graphics.off()
 
 paramFile = 'outputs/params'
@@ -63,12 +63,19 @@ plotMnth <- function(mnth) {
 	params = openParams(mnth)
 
 	##wood tree cover = 100
-	wood_100   = logistic( 100, params[,    'wood_0'], -params[,    'wood_k'])
-	moisture_0 = logistic(  0, params[,'moisture_0'], params[,'moisture_k'])
+	wood_100   = 1-logistic( 100, params[,    'wood_0'], -params[,    'wood_k'])
+	moisture_0 = 1-logistic(  0, params[,'moisture_0'], params[,'moisture_k'])
 	
 	lims = range(c(wood_100, moisture_0))
-	lims = c(1, 0)	
-	plot(wood_100, moisture_0, xlim = lims, ylim = lims, pch = 19, cex =0.2)
+	lims = c(0, 1)	
+        plot(lims, lims, type = 'n')
+	for (cex in c(1, 0.5, 0.2, 0.1))
+            points(wood_100, moisture_0, xlim = lims, ylim = lims,
+                   pch = 19, cex = cex,
+                   col = '#00000009', xaxt = 'n', yaxt = 'n')
+        
+        at = seq(0, 1, 0.2)
+        for (i in 1:2) axis(i, at, labels = rev(at))
 
 	pcSide <- function(test, x, y) {
 		pc = round(sum(test) /length(wood_100) * 100, 2)
